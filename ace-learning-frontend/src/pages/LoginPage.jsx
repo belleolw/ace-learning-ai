@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Reusable login card for each user role
@@ -35,6 +35,9 @@ function RoleCard({ icon, title, description, accentClasses, onClick }) {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [studentId, setStudentId] = useState("");
 
   // Role metadata for rendering the cards
   const roles = [
@@ -123,6 +126,43 @@ export default function LoginPage() {
                   </p>
                 </div>
 
+                {selectedRole && (
+                  <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      {selectedRole.title} Login
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600">
+                      Enter the student ID to access the dashboard.
+                    </p>
+
+                    <div className="mt-4 flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="Enter Student ID (e.g. S001)"
+                        value={studentId}
+                        onChange={(e) => setStudentId(e.target.value)}
+                        className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+
+                      <button
+                        onClick={() => {
+                          if (!studentId) return;
+                          localStorage.setItem("studentId", studentId);
+
+                          if (selectedRole.title === "Student") {
+                            navigate("/student/overview");
+                          } else if (selectedRole.title === "Parent") {
+                            navigate("/parent/overview");
+                          }
+                        }}
+                        className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   {roles.map((role) => (
                     <RoleCard
@@ -131,7 +171,13 @@ export default function LoginPage() {
                       title={role.title}
                       description={role.description}
                       accentClasses={role.accentClasses}
-                      onClick={() => navigate(role.path)}
+                      onClick={() => {
+                        if (role.title === "Teacher") {
+                          navigate(role.path);
+                        } else {
+                          setSelectedRole(role);
+                        }
+                      }}
                     />
                   ))}
                 </div>
