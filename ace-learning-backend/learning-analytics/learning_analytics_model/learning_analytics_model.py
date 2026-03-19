@@ -166,17 +166,61 @@ def train_models(df):
 
 
 # ------------------------------------------------------------
+# HELPER: GET LATEST SNAPSHOT PER TOPIC
+# Used for trend-aware analytics (latest vs previous)
+# ------------------------------------------------------------
+def get_latest_topic_snapshot(student_df):
+    """Return the latest assessment row for each topic for one student."""
+    if "assessment_round" not in student_df.columns:
+        return student_df.copy()
+
+    latest_snapshot = (
+        student_df.sort_values(["topic", "assessment_round"])
+        .drop_duplicates(subset=["topic"], keep="last")
+        .copy()
+    )
+    return latest_snapshot
+
+# ------------------------------------------------------------
 # WEAK TOPIC DETECTION MODEL
 # Aggregates topic mastery scores for a student and classifies
 # each topic into mastery levels.
 # ------------------------------------------------------------
 def detect_weak_topics(student_df):
 
-    topic_summary = (
-        student_df.groupby("topic", as_index=False)["topic_mastery"]
-        .mean()
-        .sort_values(by="topic_mastery")
-    )
+    # If no assessment rounds, fallback to old logic
+    if "assessment_round" not in student_df.columns:
+        topic_summary = (
+            student_df.groupby("topic", as_index=False)["topic_mastery"]
+            .mean()
+            .sort_values(by="topic_mastery")
+        )
+
+        topic_summary["previous_score"] = topic_summary["topic_mastery"]
+        topic_summary["trend_delta"] = 0
+
+    else:
+        # Get latest and previous attempts per topic
+        sorted_df = student_df.sort_values(["topic", "assessment_round"])
+
+        latest = (
+            sorted_df.groupby("topic").tail(1)
+            [["topic", "topic_mastery"]]
+            .rename(columns={"topic_mastery": "score"})
+        )
+
+        previous = (
+            sorted_df.groupby("topic").nth(-2)
+            [["topic", "topic_mastery"]]
+            .rename(columns={"topic_mastery": "previous_score"})
+        )
+
+        topic_summary = latest.merge(previous, on="topic", how="left")
+
+        topic_summary["previous_score"] = topic_summary["previous_score"].fillna(topic_summary["score"])
+        topic_summary["trend_delta"] = topic_summary["score"] - topic_summary["previous_score"]
+
+        topic_summary = topic_summary.sort_values(by="score")
 
     def classify_mastery(score):
         if score < 60:
@@ -185,7 +229,7 @@ def detect_weak_topics(student_df):
             return "Moderate"
         return "Strong"
 
-    topic_summary["mastery_level"] = topic_summary["topic_mastery"].apply(classify_mastery)
+    topic_summary["mastery_level"] = topic_summary["score"].apply(classify_mastery)
 
     weak_topics = topic_summary[topic_summary["mastery_level"] == "Weak"].copy()
 
@@ -426,56 +470,39 @@ def build_recommended_actions(risk_level, weak_topics_df):
     return actions
 
 
-def build_study_plan(weak_topics_df):
-    weak_topics = weak_topics_df["topic"].tolist()
+def build_study_plan(topic_summary_df):
+    # Sort all topics by mastery (lowest = weakest)
+    sorted_topics = topic_summary_df.sort_values(by="topic_mastery")
+    topics = sorted_topics["topic"].tolist()
 
     plan = []
 
-    if weak_topics:
+    if len(topics) >= 1:
         plan.append(
             {
                 "day": "Monday",
-                "title": f"{weak_topics[0]} Revision",
+                "title": f"{topics[0]} Revision",
                 "meta": "20 mins · High priority",
             }
         )
 
-    if len(weak_topics) >= 2:
+    if len(topics) >= 2:
         plan.append(
             {
                 "day": "Wednesday",
-                "title": f"{weak_topics[1]} Practice",
+                "title": f"{topics[1]} Practice",
                 "meta": "15 mins · Medium priority",
             }
         )
 
-    if len(weak_topics) >= 3:
+    if len(topics) >= 3:
         plan.append(
             {
                 "day": "Friday",
-                "title": f"{weak_topics[2]} Review",
+                "title": f"{topics[2]} Review",
                 "meta": "15 mins · Medium priority",
             }
         )
-
-    if not plan:
-        plan = [
-            {
-                "day": "Monday",
-                "title": "Mixed Practice Set",
-                "meta": "15 mins · Low priority",
-            },
-            {
-                "day": "Wednesday",
-                "title": "Progress Review",
-                "meta": "10 mins · Low priority",
-            },
-            {
-                "day": "Friday",
-                "title": "Mini Mock Check-in",
-                "meta": "15 mins · Low priority",
-            },
-        ]
 
     return plan
 

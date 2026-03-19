@@ -5,6 +5,7 @@ from learning_analytics_model import (
     load_data,
     engineer_features,
     train_models,
+    get_latest_topic_snapshot,
     detect_weak_topics,
     calculate_topic_analytics,
     generate_teacher_focus_list,
@@ -72,14 +73,15 @@ class StudentDashboardResource(Resource):
         student_id = student_id.upper()
 
         student_df = df[df["student_id"] == student_id].copy()
+        latest_student_df = get_latest_topic_snapshot(student_df)
 
         if student_df.empty:
             return {"error": f"Student {student_id} not found"}, 404
 
-        student_df["predicted_exam_score"] = reg_model.predict(student_df[features])
-        predicted_exam_score = float(student_df["predicted_exam_score"].mean())
+        latest_student_df["predicted_exam_score"] = reg_model.predict(latest_student_df[features])
+        predicted_exam_score = float(latest_student_df["predicted_exam_score"].mean())
 
-        avg_features = pd.DataFrame([student_df[features].mean()])
+        avg_features = pd.DataFrame([latest_student_df[features].mean()])
         avg_features_scaled = scaler.transform(avg_features)
         risk_encoded = clf_model.predict(avg_features_scaled)[0]
         risk_level = label_encoder.inverse_transform([risk_encoded])[0]
@@ -89,7 +91,8 @@ class StudentDashboardResource(Resource):
         recent_assessments = build_recent_assessments(student_df)
         student_progress_summary = build_student_progress_summary(student_df, predicted_exam_score)
         recommended_actions = build_recommended_actions(risk_level, weak_topics)
-        study_plan = build_study_plan(weak_topics)
+        study_plan_input = topic_mastery_summary.rename(columns={"score": "topic_mastery"}).copy()
+        study_plan = build_study_plan(study_plan_input)
 
         response = {
             "student_id": student_id,
@@ -98,7 +101,9 @@ class StudentDashboardResource(Resource):
             "topic_mastery": [
                 {
                     "topic": row["topic"],
-                    "score": round(row["topic_mastery"], 2),
+                    "score": round(row["score"], 2),
+                    "previous_score": round(row["previous_score"], 2),
+                    "trend_delta": round(row["trend_delta"], 2),
                     "mastery_level": row["mastery_level"],
                 }
                 for _, row in topic_mastery_summary.iterrows()
@@ -106,7 +111,9 @@ class StudentDashboardResource(Resource):
             "weak_topics": [
                 {
                     "topic": row["topic"],
-                    "mastery": round(row["topic_mastery"], 2),
+                    "mastery": round(row["score"], 2),
+                    "previous_score": round(row["previous_score"], 2),
+                    "trend_delta": round(row["trend_delta"], 2),
                     "mastery_level": row["mastery_level"],
                 }
                 for _, row in weak_topics.iterrows()
