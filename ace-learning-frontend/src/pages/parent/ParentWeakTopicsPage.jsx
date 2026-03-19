@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
 
 const API_BASE_URL = "http://127.0.0.1:5001"
@@ -12,7 +13,7 @@ function getTopicStyle(masteryLevel = "") {
 
   if (level === "weak") {
     return {
-      color: "bg-rose-500",
+      color: "bg-rose-400",
       light: "bg-rose-100",
       text: "text-rose-600",
       label: "Weak",
@@ -52,14 +53,33 @@ export default function ParentWeakTopicsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
 
-  const navItems = [
-    { label: "Dashboard", to: "/parent/overview" },
-    { label: "Child Progress", to: "/parent/child-progress" },
-    { label: "Weak Topics", to: "/parent/weak-topics" },
-    { label: "Recommendations", to: "/parent/recommendations" },
-  ]
+  const [searchParams] = useSearchParams()
 
-  const studentId = localStorage.getItem("parentStudentId") || localStorage.getItem("studentId") || "S007"
+  const studentIdFromQuery = searchParams.get("studentId")
+  const studentIdFromStorage =
+    localStorage.getItem("ace-student-id") ||
+    localStorage.getItem("parentStudentId") ||
+    localStorage.getItem("studentId")
+  const studentId = studentIdFromQuery || studentIdFromStorage || ""
+
+  const navItems = [
+    {
+      label: "Dashboard",
+      to: studentId ? `/parent/overview?studentId=${studentId}` : "/parent/overview",
+    },
+    {
+      label: "Child Progress",
+      to: studentId ? `/parent/child-progress?studentId=${studentId}` : "/parent/child-progress",
+    },
+    {
+      label: "Weak Topics",
+      to: studentId ? `/parent/weak-topics?studentId=${studentId}` : "/parent/weak-topics",
+    },
+    {
+      label: "Recommendations",
+      to: studentId ? `/parent/recommendations?studentId=${studentId}` : "/parent/recommendations",
+    },
+  ]
 
   useEffect(() => {
     let isMounted = true
@@ -68,6 +88,10 @@ export default function ParentWeakTopicsPage() {
       try {
         setIsLoading(true)
         setError("")
+
+        if (!studentId) {
+          throw new Error("No student selected. Please open this page after selecting a student.")
+        }
 
         const response = await fetch(`${API_BASE_URL}/api/student/${studentId}`)
 
@@ -247,14 +271,14 @@ export default function ParentWeakTopicsPage() {
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-end justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-semibold tracking-tight">Topic Weakness Heatmap</h2>
+                    <h2 className="text-xl font-semibold tracking-tight">Topic Performance Breakdown</h2>
                     <p className="mt-1 text-sm text-slate-500">
                       Based on recent quizzes, practice sets, and mock test performance
                     </p>
                   </div>
                   <div className="flex items-center gap-3 text-xs font-medium text-slate-500">
                     <div className="flex items-center gap-1.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
                       Weak
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -303,9 +327,6 @@ export default function ParentWeakTopicsPage() {
                   <p className="mt-4 text-sm leading-6 text-slate-600">
                     Your child is showing the weakest performance in {weakestTopic?.topic || "this topic"}, and it should be prioritised for early support this week.
                   </p>
-                  <button className="mt-5 w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                    View Support Plan
-                  </button>
                   <div className="mt-4 rounded-2xl border border-white/80 bg-white/70 p-4">
                     <p className="text-sm text-slate-600">
                       Students who strengthen their weakest topic early often improve overall exam performance faster.
@@ -365,9 +386,6 @@ export default function ParentWeakTopicsPage() {
                       {item.title}
                     </div>
                     <div className="mt-2 text-sm text-slate-600">{item.meta}</div>
-                    <button className="mt-5 rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                      View task
-                    </button>
                   </div>
                 ))}
               </div>

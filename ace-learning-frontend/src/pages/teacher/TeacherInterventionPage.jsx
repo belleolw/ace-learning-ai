@@ -280,7 +280,7 @@ export default function TeacherInterventionPage() {
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">Intervention Capacity</p>
+                <p className="text-sm font-medium text-slate-500">Planned Intervention Capacity</p>
                 <div className="mt-4 text-3xl font-semibold tracking-tight">3 Sessions</div>
                 <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
                   <div
@@ -288,7 +288,7 @@ export default function TeacherInterventionPage() {
                     style={{ width: `${Math.max(30, Math.min(100, averageFocusScore))}%` }}
                   />
                 </div>
-                <p className="mt-3 text-sm font-medium text-teal-600">Planned for this week</p>
+                <p className="mt-3 text-sm font-medium text-teal-600">Based on current intervention load</p>
               </div>
             </section>
 
@@ -307,7 +307,7 @@ export default function TeacherInterventionPage() {
                   {interventions.map((item) => (
                     <div
                       key={item.title}
-                      className={`rounded-2xl border border-slate-200 p-5 ${item.light}`}
+                      className={`rounded-2xl border border-slate-200 p-4 ${item.light}`}
                     >
                       <div>
                         <div className="text-lg font-semibold tracking-tight text-slate-900">
@@ -346,7 +346,7 @@ export default function TeacherInterventionPage() {
                   <h3 className="mt-4 text-lg font-semibold tracking-tight text-slate-900">
                     Best Immediate Action
                   </h3>
-                  <div className="mt-2 text-3xl font-semibold tracking-tight text-rose-600">
+                  <div className="mt-2 text-2xl font-semibold tracking-tight text-rose-600">
                     {bestImmediateAction}
                   </div>
                   <p className="mt-4 text-sm leading-6 text-slate-600">
@@ -356,20 +356,6 @@ export default function TeacherInterventionPage() {
                     <p className="text-sm text-slate-600">
                       Targeted small-group intervention can improve performance faster than broad revision when only certain students are falling behind.
                     </p>
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="text-base font-semibold tracking-tight">Intervention Snapshot</h3>
-                  <div className="mt-4 space-y-4">
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-sm font-medium text-slate-500">Highest priority topic</div>
-                      <div className="mt-1 font-semibold">{lowestPerformingTopic?.topic || topWeakTopic}</div>
-                    </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-sm font-medium text-slate-500">Best format</div>
-                      <div className="mt-1 font-semibold">Small-group reteaching</div>
-                    </div>
                   </div>
                 </div>
 
@@ -399,23 +385,30 @@ export default function TeacherInterventionPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                {weeklyPlan.map((item) => (
-                  <div
-                    key={item.day}
-                    className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                  >
-                    <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.accent}`} />
-                    <div className="text-sm font-semibold text-slate-500">{item.day}</div>
-                    <div className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
-                      {item.title}
+              <div className="relative mt-6">
+                <div className="absolute left-[1.1rem] top-0 bottom-0 w-px bg-slate-200" />
+
+                <div className="space-y-4">
+                  {weeklyPlan.map((item) => (
+                    <div key={item.day} className="relative pl-12">
+                      <div className={`absolute left-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r text-xs font-bold text-white shadow-sm ${item.accent}`}>
+                        {item.day.slice(0, 3)}
+                      </div>
+
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <div className="text-sm font-semibold text-slate-500">{item.day}</div>
+                            <div className="mt-1 text-base font-semibold tracking-tight text-slate-900">
+                              {item.title}
+                            </div>
+                            <div className="mt-1 text-xs text-slate-600">{item.meta}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-2 text-sm text-slate-600">{item.meta}</div>
-                    <button className="mt-5 rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                      View task
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </section>
           </>

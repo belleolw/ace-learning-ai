@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
 
 const API_BASE_URL = "http://127.0.0.1:5001"
@@ -50,14 +51,38 @@ export default function StudentStudyPlan() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
 
-  const navItems = [
-    { label: "Dashboard", to: "/student/overview" },
-    { label: "Practice", to: "/student/practice" },
-    { label: "Study Plan", to: "/student/study-plan" },
-    { label: "Progress", to: "/student/progress" },
-  ]
+  const [searchParams] = useSearchParams()
 
-  const studentId = localStorage.getItem("studentId") || "S007"
+  const studentIdFromQuery = searchParams.get("studentId")
+  const studentIdFromStorage = localStorage.getItem("studentId")
+  const studentId = studentIdFromQuery || studentIdFromStorage || ""
+
+  const navItems = [
+    {
+      label: "Dashboard",
+      to: studentId
+        ? `/student/overview?studentId=${studentId}`
+        : "/student/overview",
+    },
+    {
+      label: "Practice",
+      to: studentId
+        ? `/student/practice?studentId=${studentId}`
+        : "/student/practice",
+    },
+    {
+      label: "Study Plan",
+      to: studentId
+        ? `/student/study-plan?studentId=${studentId}`
+        : "/student/study-plan",
+    },
+    {
+      label: "Progress",
+      to: studentId
+        ? `/student/progress?studentId=${studentId}`
+        : "/student/progress",
+    },
+  ]
 
   useEffect(() => {
     let isMounted = true
@@ -321,23 +346,34 @@ export default function StudentStudyPlan() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-                {weeklySchedule.map((item) => (
-                  <div
-                    key={item.label}
-                    className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                  >
-                    <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.accent}`} />
-                    <div className="text-sm font-semibold text-slate-500">{item.label}</div>
-                    <div className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
-                      {item.title}
+              <div className="relative mt-6">
+                <div className="absolute left-[1.1rem] top-0 bottom-0 w-px bg-slate-200" />
+
+                <div className="space-y-4">
+                  {weeklySchedule.map((item) => (
+                    <div key={item.label} className="relative pl-12">
+                      <div className={`absolute left-0 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r text-xs font-bold text-white shadow-sm ${item.accent}`}>
+                        {item.label.slice(0, 3)}
+                      </div>
+
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <div className="text-sm font-semibold text-slate-500">{item.label}</div>
+                            <div className="mt-1 text-base font-semibold tracking-tight text-slate-900">
+                              {item.title}
+                            </div>
+                            <div className="mt-1 text-xs text-slate-600">{item.meta}</div>
+                          </div>
+
+                          <button className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100 sm:self-center">
+                            View task
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-2 text-sm text-slate-600">{item.meta}</div>
-                    <button className="mt-5 rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                      View task
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </section>
           </>

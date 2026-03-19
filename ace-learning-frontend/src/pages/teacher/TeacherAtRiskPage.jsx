@@ -73,10 +73,7 @@ export default function TeacherAtRiskPage() {
 
   const atRiskStudents = useMemo(() => {
     return focusList
-      .filter(
-        (student) =>
-          student.focus_priority === "High" || student.risk_level === "At Risk",
-      )
+      .filter((student) => student.risk_level === "At Risk")
       .slice(0, 8)
       .map((student) => ({
         name: student.student_id,
@@ -296,7 +293,7 @@ export default function TeacherAtRiskPage() {
                           </div>
                         </div>
 
-                        <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[360px] xl:grid-cols-3">
+                        <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[280px] xl:grid-cols-2">
                           <div className="rounded-2xl bg-white p-4">
                             <div className="text-sm font-medium text-slate-500">
                               Weak topic
@@ -312,11 +309,6 @@ export default function TeacherAtRiskPage() {
                             <div className="mt-1 font-semibold">
                               {student.attendance}
                             </div>
-                          </div>
-                          <div className="flex items-center">
-                            <button className="w-full rounded-xl bg-white px-3 py-3 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                              View student
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -373,62 +365,6 @@ export default function TeacherAtRiskPage() {
                     </div>
                   </div>
                 </div>
-
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="text-base font-semibold tracking-tight">
-                    Why students are at risk
-                  </h3>
-                  <div className="mt-4 space-y-3">
-                    {riskReasons.map((reason) => (
-                      <div key={reason} className="rounded-2xl bg-slate-50 p-4">
-                        <div className="text-sm font-medium text-slate-700">
-                          {reason}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold tracking-tight">
-                    Suggested Teacher Actions
-                  </h2>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Prioritised intervention plan for this week
-                  </p>
-                </div>
-                <div className="rounded-full bg-violet-50 px-3 py-1 text-sm font-medium text-violet-600">
-                  This week
-                </div>
-              </div>
-
-              <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                {interventionPlan.map((item) => (
-                  <div
-                    key={item.day}
-                    className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-5"
-                  >
-                    <div
-                      className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.accent}`}
-                    />
-                    <div className="text-sm font-semibold text-slate-500">
-                      {item.day}
-                    </div>
-                    <div className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
-                      {item.title}
-                    </div>
-                    <div className="mt-2 text-sm text-slate-600">
-                      {item.meta}
-                    </div>
-                    <button className="mt-5 rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                      View task
-                    </button>
-                  </div>
-                ))}
               </div>
             </section>
           </>

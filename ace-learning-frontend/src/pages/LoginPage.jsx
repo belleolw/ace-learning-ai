@@ -94,13 +94,17 @@ export default function LoginPage() {
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
                 <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                  <div className="text-sm text-blue-100">AI-powered insights</div>
+                  <div className="text-sm text-blue-100">
+                    AI-powered insights
+                  </div>
                   <div className="mt-1 text-lg font-semibold">
                     Personalised learning paths
                   </div>
                 </div>
                 <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-                  <div className="text-sm text-blue-100">Predictive analytics</div>
+                  <div className="text-sm text-blue-100">
+                    Predictive analytics
+                  </div>
                   <div className="mt-1 text-lg font-semibold">
                     Smarter exam preparation
                   </div>
@@ -147,12 +151,16 @@ export default function LoginPage() {
                       <button
                         onClick={() => {
                           if (!studentId) return;
-                          localStorage.setItem("studentId", studentId);
+
+                          // Store student ID globally for all pages
+                          localStorage.setItem("ace-student-id", studentId);
 
                           if (selectedRole.title === "Student") {
-                            navigate("/student/overview");
+                            navigate(
+                              `/student/overview?studentId=${studentId}`,
+                            );
                           } else if (selectedRole.title === "Parent") {
-                            navigate("/parent/overview");
+                            navigate(`/parent/overview?studentId=${studentId}`);
                           }
                         }}
                         className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"

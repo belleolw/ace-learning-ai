@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
 
-const STORAGE_KEY = "studentId"
+const STORAGE_KEY = "ace-student-id"
 const API_BASE_URL = "http://127.0.0.1:5001"
 
 function getMasteryStyles(level) {
   if (level === "Weak") {
     return {
-      color: "bg-rose-500",
+      color: "bg-rose-400",
       light: "bg-rose-100",
       text: "text-rose-600",
     }
@@ -36,8 +37,11 @@ export default function ParentDashboard() {
   const [studentData, setStudentData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
+  const [searchParams] = useSearchParams()
 
-  const studentId = localStorage.getItem(STORAGE_KEY)
+  const studentIdFromQuery = searchParams.get("studentId")
+  const studentIdFromStorage = localStorage.getItem(STORAGE_KEY)
+  const studentId = studentIdFromQuery || studentIdFromStorage || ""
 
   useEffect(() => {
     let isMounted = true
@@ -100,18 +104,47 @@ export default function ParentDashboard() {
     }))
   }, [studentData])
 
-  const weakTopic = studentData?.weak_topics?.[0]
+    const strongestGrowthTopic = useMemo(() => {
+    if (!studentData?.topic_mastery?.length) {
+      return "N/A"
+    }
+
+    const strongest = [...studentData.topic_mastery].sort(
+      (a, b) => Number(b.trend_delta || 0) - Number(a.trend_delta || 0)
+    )[0]
+
+    return strongest?.topic || "N/A"
+  }, [studentData])
+
+  const weakTopic = useMemo(() => {
+    if (studentData?.weak_topics?.length) {
+      return [...studentData.weak_topics].sort((a, b) => a.mastery - b.mastery)[0]
+    }
+
+    if (studentData?.topic_mastery?.length) {
+      const lowest = [...studentData.topic_mastery].sort((a, b) => a.score - b.score)[0]
+      return {
+        topic: lowest.topic,
+        mastery: lowest.score,
+        mastery_level: lowest.mastery_level,
+      }
+    }
+
+    return null
+  }, [studentData])
   const studyPlan = studentData?.study_plan || []
   const progressSummary = studentData?.student_progress_summary
   const recommendedActions = studentData?.recommended_actions || []
-  const parentActions = recommendedActions.filter((item) => item.target === "Teacher")
+  const parentActions = recommendedActions.filter((item) => item.target === "Parent")
   const fallbackAction = recommendedActions[0]
   const suggestedAction = parentActions[0] || fallbackAction
 
   const predictedScore = studentData?.predicted_exam_score ?? 0
-  const readinessScore = progressSummary?.recent_average_score ?? 0
   const completionScore = Math.max(0, Math.min(100, progressSummary?.best_score ?? 0))
   const improvementRate = progressSummary?.improvement_rate ?? 0
+  const improvementBadgeClass = improvementRate >= 0
+    ? "bg-emerald-50 text-emerald-600"
+    : "bg-rose-50 text-rose-600"
 
   return (
     <DashboardLayout
@@ -142,7 +175,7 @@ export default function ParentDashboard() {
                     <div className="mt-4 text-5xl font-semibold tracking-tight text-blue-600">
                       {formatPercent(predictedScore)}
                     </div>
-                    <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600">
+                    <div className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${improvementBadgeClass}`}>
                       <span>{improvementRate >= 0 ? "↗" : "↘"}</span>
                       <span>{`${improvementRate >= 0 ? "+" : ""}${improvementRate.toFixed(2)}% improvement rate`}</span>
                     </div>
@@ -167,34 +200,20 @@ export default function ParentDashboard() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-slate-500">Exam Readiness</p>
-                    <div className="mt-4 text-2xl font-semibold tracking-tight">
-                      {formatPercent(readinessScore)} Ready
-                    </div>
-                    <p className="mt-2 text-sm text-slate-500">Based on recent practices</p>
-                  </div>
-                  <div className="relative h-24 w-24">
-                    <div
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        background: `conic-gradient(#8b5cf6 0 ${Math.max(
-                          0,
-                          Math.min(100, readinessScore)
-                        )}%, #e2e8f0 ${Math.max(0, Math.min(100, readinessScore))}% 100%)`,
-                      }}
-                    />
-                    <div className="absolute inset-2 flex items-center justify-center rounded-full bg-white text-lg font-semibold text-slate-900">
-                      {formatPercent(readinessScore)}
-                    </div>
-                  </div>
+              <div className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 to-orange-50 p-6 shadow-sm">
+                <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-500 shadow-sm">
+                  AI Progress Insight
+                </div>
+                <h3 className="mt-4 text-lg font-semibold tracking-tight text-slate-900">
+                  Biggest Improvement
+                </h3>
+                <div className="mt-2 text-3xl font-semibold tracking-tight text-rose-600">
+                  {strongestGrowthTopic}
                 </div>
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">Weekly Practice Progress</p>
+                <p className="text-sm font-medium text-slate-500">Mock Test Average</p>
                 <div className="mt-4 text-3xl font-semibold tracking-tight">
                   {formatPercent(progressSummary?.recent_average_score ?? 0)}
                 </div>
@@ -214,11 +233,11 @@ export default function ParentDashboard() {
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-end justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-semibold tracking-tight">Topic Mastery Heatmap</h2>
+                    <h2 className="text-xl font-semibold tracking-tight">Topic Performance Breakdown</h2>
                     <p className="mt-1 text-sm text-slate-500">Based on recent practice performance</p>
                   </div>
                   <div className="flex items-center gap-3 text-xs font-medium text-slate-500">
-                    <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-rose-500" />Weak</div>
+                    <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" />Weak</div>
                     <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-400" />Moderate</div>
                     <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Strong</div>
                   </div>
@@ -257,16 +276,13 @@ export default function ParentDashboard() {
                     {weakTopic?.topic || "No weak topic"}
                   </div>
                   <div className="mt-2 text-sm font-medium text-slate-600">
-                    Accuracy: {weakTopic ? formatPercent(weakTopic.mastery) : "N/A"}
+                    Performance: {weakTopic ? formatPercent(weakTopic.mastery) : "N/A"}
                   </div>
                   <p className="mt-4 text-sm leading-6 text-slate-600">
                     {suggestedAction
                       ? `${suggestedAction.title} — estimated ${suggestedAction.estimated_time_mins} mins.`
                       : "Your child may benefit from additional guided practice this week."}
                   </p>
-                  <button className="mt-5 w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                    View Recommended Practice
-                  </button>
                   <div className="mt-4 rounded-2xl border border-white/80 bg-white/70 p-4">
                     <p className="text-sm text-slate-600">
                       Next milestone: <span className="font-semibold text-slate-900">{progressSummary?.next_milestone || "Keep improving"}</span>
@@ -280,7 +296,7 @@ export default function ParentDashboard() {
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="text-sm font-medium text-slate-500">Suggested Parent Support</div>
                       <div className="mt-1 font-semibold">
-                        {suggestedAction?.title || "Encourage consistent revision today"}
+                        {suggestedAction?.title || "Encourage a short revision session today"}
                       </div>
                     </div>
                     <div className="rounded-2xl bg-slate-50 p-4">
@@ -320,9 +336,6 @@ export default function ParentDashboard() {
                     <div className="text-sm font-semibold text-slate-500">{item.day}</div>
                     <div className="mt-3 text-lg font-semibold tracking-tight text-slate-900">{item.title}</div>
                     <div className="mt-2 text-sm text-slate-600">{item.meta}</div>
-                    <button className="mt-5 rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100">
-                      View task
-                    </button>
                   </div>
                 ))}
               </div>
