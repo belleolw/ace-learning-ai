@@ -90,6 +90,7 @@ export default function AceStudentDashboard() {
     { label: "Practice", to: studentId ? `/student/practice?studentId=${studentId}` : "/student/practice" },
     { label: "Study Plan", to: studentId ? `/student/study-plan?studentId=${studentId}` : "/student/study-plan" },
     { label: "Progress", to: studentId ? `/student/progress?studentId=${studentId}` : "/student/progress" },
+    { label: "Wellness", to: studentId ? `/student/wellness?studentId=${studentId}` : "/student/wellness" },
   ]
 
   const mastery = useMemo(() => {
