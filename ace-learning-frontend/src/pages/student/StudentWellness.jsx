@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
 
 const API_BASE_URL = "http://127.0.0.1:5001"
+const STORAGE_KEY = "ace-student-id"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -165,16 +167,25 @@ export default function StudentWellness() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [activeTab, setActiveTab] = useState("overview") // overview | sleep | screen | sessions
+  const [searchParams] = useSearchParams()
+
+  const studentIdFromQuery = searchParams.get("studentId")
+  const studentIdFromStorage = localStorage.getItem(STORAGE_KEY)
+  const studentId = studentIdFromQuery || studentIdFromStorage || "S007"
 
   const navItems = [
-    { label: "Dashboard", to: "/student/overview" },
-    { label: "Practice", to: "/student/practice" },
-    { label: "Study Plan", to: "/student/study-plan" },
-    { label: "Progress", to: "/student/progress" },
-    { label: "Wellness", to: "/student/wellness" },
+    { label: "Dashboard", to: studentId ? `/student/overview?studentId=${studentId}` : "/student/overview" },
+    { label: "Practice", to: studentId ? `/student/practice?studentId=${studentId}` : "/student/practice" },
+    { label: "Study Plan", to: studentId ? `/student/study-plan?studentId=${studentId}` : "/student/study-plan" },
+    { label: "Progress", to: studentId ? `/student/progress?studentId=${studentId}` : "/student/progress" },
+    { label: "Wellness", to: studentId ? `/student/wellness?studentId=${studentId}` : "/student/wellness" },
   ]
 
-  const studentId = localStorage.getItem("studentId") || "S007"
+  useEffect(() => {
+    if (studentIdFromQuery) {
+      localStorage.setItem(STORAGE_KEY, studentIdFromQuery)
+    }
+  }, [studentIdFromQuery])
 
   useEffect(() => {
     let isMounted = true

@@ -4,6 +4,495 @@ import { useSearchParams } from "react-router-dom";
 
 const API_BASE_URL = "http://127.0.0.1:5001";
 const STORAGE_KEY = "ace-student-id";
+const DRILL_SETS = {
+  Percentage: {
+    displayTitle: "Percentage Drill Set",
+    description: "Percentage fundamentals practice",
+    supportHeading: "Percentage Essentials",
+    supportText:
+      "Mastering percentage fundamentals improves speed and accuracy in discount, interest, and comparison questions.",
+    supportStat: "Students who improve Percentage mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Percentage increase",
+        meta: "Track change over time",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Discount problems",
+        meta: "Apply percent reductions",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Reverse percentages",
+        meta: "Work backwards from totals",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "What is 25% of 160?",
+        options: ["20", "30", "40", "50"],
+        correctAnswer: "40",
+        explanation: "25% is one quarter, and one quarter of 160 is 40.",
+        topic: "Finding percentages",
+      },
+      {
+        id: 2,
+        question: "A shirt costs $80 and is discounted by 15%. What is the discount amount?",
+        options: ["$10", "$12", "$15", "$20"],
+        correctAnswer: "$12",
+        explanation: "15% of 80 is 0.15 × 80 = 12.",
+        topic: "Discounts",
+      },
+      {
+        id: 3,
+        question: "A value rises from 50 to 60. What is the percentage increase?",
+        options: ["10%", "15%", "20%", "25%"],
+        correctAnswer: "20%",
+        explanation: "The increase is 10, and 10 ÷ 50 = 0.2, which is 20%.",
+        topic: "Percentage change",
+      },
+    ],
+  },
+  Algebra: {
+    displayTitle: "Algebra Drill Set",
+    description: "Algebra fundamentals practice",
+    supportHeading: "Algebra Basics",
+    supportText:
+      "Mastering algebra fundamentals improves accuracy in many exam questions and raises predicted performance over time.",
+    supportStat: "Students who improve Algebra mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Simplifying expressions",
+        meta: "Combine like terms",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Solving equations",
+        meta: "One-step linear equations",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Rearranging terms",
+        meta: "Build algebra confidence",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "Solve for x: 2x + 3 = 11",
+        options: ["x = 2", "x = 3", "x = 4", "x = 5"],
+        correctAnswer: "x = 4",
+        explanation: "Subtract 3 from both sides to get 2x = 8, then divide by 2.",
+        topic: "Linear equations",
+      },
+      {
+        id: 2,
+        question: "Simplify: 3a + 2a",
+        options: ["5", "5a", "6a", "a5"],
+        correctAnswer: "5a",
+        explanation: "Like terms can be combined by adding their coefficients.",
+        topic: "Simplifying expressions",
+      },
+      {
+        id: 3,
+        question: "Solve for y: y - 7 = 10",
+        options: ["y = 17", "y = 3", "y = -17", "y = 70"],
+        correctAnswer: "y = 17",
+        explanation: "Add 7 to both sides to isolate y.",
+        topic: "One-step equations",
+      },
+    ],
+  },
+  Inequalities: {
+    displayTitle: "Inequalities Drill Set",
+    description: "Inequalities practice",
+    supportHeading: "Inequalities Skills",
+    supportText:
+      "Strong inequalities skills help with number lines, ranges, and exam questions involving constraints.",
+    supportStat: "Students who improve Inequalities mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Number line shading",
+        meta: "Show valid regions clearly",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Compound inequalities",
+        meta: "Work with double bounds",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Word constraints",
+        meta: "Translate context into symbols",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "Solve: x + 4 > 9",
+        options: ["x > 5", "x < 5", "x > 13", "x < 13"],
+        correctAnswer: "x > 5",
+        explanation: "Subtract 4 from both sides to get x > 5.",
+        topic: "One-step inequalities",
+      },
+      {
+        id: 2,
+        question: "Solve: 2x ≤ 12",
+        options: ["x ≤ 6", "x ≥ 6", "x ≤ 10", "x ≥ 10"],
+        correctAnswer: "x ≤ 6",
+        explanation: "Divide both sides by 2 to get x ≤ 6.",
+        topic: "Dividing inequalities",
+      },
+      {
+        id: 3,
+        question: "Which value satisfies x < 3?",
+        options: ["5", "3", "2", "4"],
+        correctAnswer: "2",
+        explanation: "Only 2 is less than 3.",
+        topic: "Checking solutions",
+      },
+    ],
+  },
+  Matrices: {
+    displayTitle: "Matrices Drill Set",
+    description: "Matrices fundamentals practice",
+    supportHeading: "Matrices Basics",
+    supportText:
+      "Matrices questions reward careful structure and accuracy, especially in operations and reading entries.",
+    supportStat: "Students who improve Matrices mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Matrix addition",
+        meta: "Combine entries correctly",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Scalar multiplication",
+        meta: "Scale every entry",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Matrix notation",
+        meta: "Identify rows and columns",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "How many rows does a 2 × 3 matrix have?",
+        options: ["2", "3", "5", "6"],
+        correctAnswer: "2",
+        explanation: "The first number gives the number of rows.",
+        topic: "Matrix dimensions",
+      },
+      {
+        id: 2,
+        question: "If A = [[1, 2], [3, 4]], what is the entry in row 2, column 1?",
+        options: ["1", "2", "3", "4"],
+        correctAnswer: "3",
+        explanation: "Row 2, column 1 is the lower-left entry, which is 3.",
+        topic: "Reading matrix entries",
+      },
+      {
+        id: 3,
+        question: "Add [[1, 2], [0, 3]] and [[2, 1], [4, 0]]. What is the top-left entry?",
+        options: ["1", "2", "3", "4"],
+        correctAnswer: "3",
+        explanation: "Add corresponding entries: 1 + 2 = 3.",
+        topic: "Matrix addition",
+      },
+    ],
+  },
+  Geometry: {
+    displayTitle: "Geometry Drill Set",
+    description: "Geometry essentials practice",
+    supportHeading: "Geometry Essentials",
+    supportText:
+      "Geometry practice strengthens visual reasoning and helps with shape, angle, and theorem-based questions.",
+    supportStat: "Students who improve Geometry mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Perimeter review",
+        meta: "Add side lengths accurately",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Area formulas",
+        meta: "Match the right formula",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Shape properties",
+        meta: "Spot key geometry facts",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "What is the sum of the interior angles of a triangle?",
+        options: ["90°", "180°", "270°", "360°"],
+        correctAnswer: "180°",
+        explanation: "The interior angles of every triangle add up to 180°.",
+        topic: "Angle facts",
+      },
+      {
+        id: 2,
+        question: "What is the area of a rectangle with length 8 cm and width 3 cm?",
+        options: ["11 cm²", "16 cm²", "24 cm²", "48 cm²"],
+        correctAnswer: "24 cm²",
+        explanation: "Area of a rectangle is length × width, so 8 × 3 = 24.",
+        topic: "Area",
+      },
+      {
+        id: 3,
+        question: "How many sides does a hexagon have?",
+        options: ["5", "6", "7", "8"],
+        correctAnswer: "6",
+        explanation: "A hexagon is a 6-sided polygon.",
+        topic: "Polygons",
+      },
+    ],
+  },
+  Angles: {
+    displayTitle: "Angles Drill Set",
+    description: "Angle relationships practice",
+    supportHeading: "Angle Relationships",
+    supportText:
+      "Angles questions build fluency with straight lines, intersecting lines, and parallel line rules.",
+    supportStat: "Students who improve Angles mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Straight-line angles",
+        meta: "Use 180° totals",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Vertically opposite angles",
+        meta: "Match equal pairs",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Parallel line rules",
+        meta: "Spot alternate and corresponding angles",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "Angles on a straight line add up to:",
+        options: ["90°", "180°", "270°", "360°"],
+        correctAnswer: "180°",
+        explanation: "A straight line forms 180°.",
+        topic: "Straight-line angles",
+      },
+      {
+        id: 2,
+        question: "If one angle is 70° on a straight line, what is the adjacent angle?",
+        options: ["20°", "70°", "110°", "290°"],
+        correctAnswer: "110°",
+        explanation: "Adjacent angles on a straight line total 180°, so 180 - 70 = 110.",
+        topic: "Supplementary angles",
+      },
+      {
+        id: 3,
+        question: "Vertically opposite angles are:",
+        options: ["Complementary", "Equal", "Supplementary", "Random"],
+        correctAnswer: "Equal",
+        explanation: "Vertically opposite angles are always equal.",
+        topic: "Vertically opposite angles",
+      },
+    ],
+  },
+  Trigonometry: {
+    displayTitle: "Trigonometry Drill Set",
+    description: "Trigonometry fundamentals practice",
+    supportHeading: "Trigonometry Basics",
+    supportText:
+      "Mastering trigonometry fundamentals improves accuracy in many exam questions and raises predicted performance over time.",
+    supportStat: "Students who improve Trigonometry mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Inverse trig values",
+        meta: "Find angles from ratios",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Cosine ratios",
+        meta: "Special angle values",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Trig identities",
+        meta: "sin²θ + cos²θ = 1",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "What is sin(30°)?",
+        options: ["1/2", "√2/2", "√3/2", "1"],
+        correctAnswer: "1/2",
+        explanation: "For special angles, sin(30°) is equal to 1/2.",
+        topic: "Trigonometric ratios",
+      },
+      {
+        id: 2,
+        question: "If tan(θ) = 1, what is θ for 0° < θ < 90°?",
+        options: ["30°", "45°", "60°", "90°"],
+        correctAnswer: "45°",
+        explanation: "tan(45°) = 1, so the angle is 45°.",
+        topic: "Inverse trigonometric values",
+      },
+      {
+        id: 3,
+        question: "What is cos(60°)?",
+        options: ["√3/2", "1/2", "√2/2", "0"],
+        correctAnswer: "1/2",
+        explanation: "For special angles, cos(60°) is equal to 1/2.",
+        topic: "Trigonometric ratios",
+      },
+    ],
+  },
+  Vectors: {
+    displayTitle: "Vectors Drill Set",
+    description: "Vector fundamentals practice",
+    supportHeading: "Vector Skills",
+    supportText:
+      "Vectors practice helps with direction, magnitude, and combining movement accurately in problem solving.",
+    supportStat: "Students who improve Vectors mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Vector addition",
+        meta: "Combine components correctly",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Magnitude review",
+        meta: "Read vector size confidently",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Direction changes",
+        meta: "Interpret negative vectors",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "A vector with magnitude 0 is called a:",
+        options: ["Unit vector", "Null vector", "Parallel vector", "Column vector"],
+        correctAnswer: "Null vector",
+        explanation: "A null vector has zero magnitude.",
+        topic: "Vector properties",
+      },
+      {
+        id: 2,
+        question: "What is the result of adding the vectors (2, 1) and (1, 3)?",
+        options: ["(1, 2)", "(2, 3)", "(3, 4)", "(3, 2)"],
+        correctAnswer: "(3, 4)",
+        explanation: "Add corresponding components: (2 + 1, 1 + 3) = (3, 4).",
+        topic: "Vector addition",
+      },
+      {
+        id: 3,
+        question: "A unit vector has magnitude:",
+        options: ["0", "1", "2", "10"],
+        correctAnswer: "1",
+        explanation: "By definition, a unit vector has magnitude 1.",
+        topic: "Unit vectors",
+      },
+    ],
+  },
+  Statistics: {
+    displayTitle: "Statistics Drill Set",
+    description: "Statistics fundamentals practice",
+    supportHeading: "Statistics Basics",
+    supportText:
+      "Statistics practice strengthens interpretation of data, averages, and spread in exam-style questions.",
+    supportStat: "Students who improve Statistics mastery often gain 8–12% overall score improvement.",
+    upcomingQuestions: [
+      {
+        label: "Q2",
+        title: "Median and mode",
+        meta: "Compare common averages",
+        accent: "from-blue-500 to-cyan-400",
+      },
+      {
+        label: "Q3",
+        title: "Reading charts",
+        meta: "Interpret data displays",
+        accent: "from-violet-500 to-fuchsia-400",
+      },
+      {
+        label: "Q4",
+        title: "Range and spread",
+        meta: "Measure variation",
+        accent: "from-emerald-500 to-teal-400",
+      },
+    ],
+    questions: [
+      {
+        id: 1,
+        question: "What is the mean of 4, 6, and 8?",
+        options: ["5", "6", "7", "8"],
+        correctAnswer: "6",
+        explanation: "Add the values and divide by 3: (4 + 6 + 8) ÷ 3 = 6.",
+        topic: "Mean",
+      },
+      {
+        id: 2,
+        question: "What is the median of 2, 5, 7, 9, 10?",
+        options: ["5", "7", "9", "10"],
+        correctAnswer: "7",
+        explanation: "The median is the middle value when the data is ordered.",
+        topic: "Median",
+      },
+      {
+        id: 3,
+        question: "What is the range of 3, 8, 10, 12?",
+        options: ["4", "8", "9", "12"],
+        correctAnswer: "9",
+        explanation: "Range = highest value - lowest value = 12 - 3 = 9.",
+        topic: "Range",
+      },
+    ],
+  },
+};
+const BUILT_DRILL_TOPICS = Object.keys(DRILL_SETS);
 
 export default function StudentPractice() {
   const difficultyOptions = [
@@ -26,32 +515,6 @@ export default function StudentPractice() {
       accent: "from-emerald-500 to-teal-400",
     },
   ];
-
-  const algebraQuestions = [
-    {
-      id: 1,
-      question: "Solve for x: 2x + 3 = 11",
-      options: ["x = 2", "x = 3", "x = 4", "x = 5"],
-      correctAnswer: "x = 4",
-      explanation:
-        "Subtract 3 from both sides to get 2x = 8, then divide by 2.",
-    },
-    {
-      id: 2,
-      question: "Simplify: 3a + 2a",
-      options: ["5", "5a", "6a", "a5"],
-      correctAnswer: "5a",
-      explanation: "Like terms can be combined by adding their coefficients.",
-    },
-    {
-      id: 3,
-      question: "Solve for y: y - 7 = 10",
-      options: ["y = 17", "y = 3", "y = -17", "y = 70"],
-      correctAnswer: "y = 17",
-      explanation: "Add 7 to both sides to isolate y.",
-    },
-  ];
-
 
   const [activeSet, setActiveSet] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -89,6 +552,12 @@ export default function StudentPractice() {
       to: studentId
         ? `/student/progress?studentId=${studentId}`
         : "/student/progress",
+    },
+    {
+      label: "Wellness",
+      to: studentId
+        ? `/student/wellness?studentId=${studentId}`
+        : "/student/wellness",
     },
   ];
   useEffect(() => {
@@ -144,7 +613,6 @@ export default function StudentPractice() {
   const topicMastery = studentData?.topic_mastery || [];
   const studyPlan = studentData?.study_plan || [];
   const recentAssessments = studentData?.recent_assessments || [];
-
   const recommendedTopic = useMemo(() => {
     if (studyPlan.length && topicMastery.length) {
       const title = String(studyPlan[0]?.title || "")
@@ -220,8 +688,6 @@ export default function StudentPractice() {
     return sourceTopics.slice(0, 4).map((item, index) => {
       const style = accents[index % accents.length];
       const topicName = item.topic;
-      const isAlgebraSet = topicName === "Algebra";
-
       return {
         title: `${topicName} Practice Set`,
         questions: `${index === 0 ? 10 : index === 1 ? 8 : index === 2 ? 8 : 12} questions`,
@@ -234,7 +700,7 @@ export default function StudentPractice() {
         accent: style.accent,
         light: style.light,
         blocks: style.blocks,
-        type: isAlgebraSet ? "algebra-drill" : "coming-soon",
+        type: BUILT_DRILL_TOPICS.includes(topicName) ? topicName : "coming-soon",
         mastery: Math.round(Number(item.score || 0)),
       };
     });
@@ -248,6 +714,10 @@ export default function StudentPractice() {
   const bestNextPractice = safeRecommendedTopic
     ? `${safeRecommendedTopic} Practice Set`
     : "No practice set available";
+  const primaryRecommendedSet = recommendedSets[0] || null;
+  const activeDrill = activeSet ? DRILL_SETS[activeSet] : null;
+  const activeQuestions = activeDrill?.questions || [];
+  const activeUpcomingQuestions = activeDrill?.upcomingQuestions || [];
   const recommendedTopicDetails = useMemo(() => {
     if (!topicMastery.length) {
       return null;
@@ -260,14 +730,14 @@ export default function StudentPractice() {
     );
   }, [topicMastery, safeRecommendedTopic]);
 
-  const currentQuestion = algebraQuestions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === algebraQuestions.length - 1;
+  const currentQuestion = activeQuestions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
   const isDrillComplete =
-    activeSet === "algebra-drill" &&
-    currentQuestionIndex >= algebraQuestions.length;
+    Boolean(activeSet) &&
+    currentQuestionIndex >= activeQuestions.length;
 
   const handleStartSet = (type, title) => {
-    if (type === "algebra-drill") {
+    if (type !== "coming-soon" && DRILL_SETS[type]) {
       setActiveSet(type);
       setCurrentQuestionIndex(0);
       setSelectedOption("");
@@ -294,7 +764,7 @@ export default function StudentPractice() {
     if (!submitted) return;
 
     if (isLastQuestion) {
-      setCurrentQuestionIndex(algebraQuestions.length);
+      setCurrentQuestionIndex(activeQuestions.length);
       return;
     }
 
@@ -308,7 +778,7 @@ export default function StudentPractice() {
     setSelectedOption("");
     setSubmitted(false);
     setScore(0);
-    setActiveSet("algebra-drill");
+    setActiveSet(activeSet);
   };
 
   const handleBackToPractice = () => {
@@ -519,7 +989,10 @@ export default function StudentPractice() {
                   </p>
                   <button
                     onClick={() =>
-                      handleStartSet("algebra-drill", "Algebra Drill Set")
+                      handleStartSet(
+                        primaryRecommendedSet?.type || "coming-soon",
+                        primaryRecommendedSet?.title || "Practice Set",
+                      )
                     }
                     className="mt-5 w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                   >
@@ -596,7 +1069,7 @@ export default function StudentPractice() {
           </>
         )}
 
-        {activeSet === "algebra-drill" && !isDrillComplete && (
+        {activeSet && !isDrillComplete && activeDrill && (
           <>
             <section className="grid gap-5 lg:grid-cols-3">
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -606,7 +1079,7 @@ export default function StudentPractice() {
                       Drill Set
                     </p>
                     <div className="mt-4 text-3xl font-semibold tracking-tight text-blue-600">
-                      Algebra Drill Set
+                      {activeDrill.displayTitle}
                     </div>
                     <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600">
                       <span>✦</span>
@@ -635,9 +1108,9 @@ export default function StudentPractice() {
                       Question{" "}
                       {Math.min(
                         currentQuestionIndex + 1,
-                        algebraQuestions.length,
+                        activeQuestions.length,
                       )}{" "}
-                      / {algebraQuestions.length}
+                      / {activeQuestions.length}
                     </div>
                     <p className="mt-2 text-sm text-slate-500">
                       Estimated time 15 mins
@@ -647,16 +1120,16 @@ export default function StudentPractice() {
                     <div
                       className="absolute inset-0 rounded-full"
                       style={{
-                        background: `conic-gradient(#3b82f6 0 ${(Math.min(currentQuestionIndex + 1, algebraQuestions.length) / algebraQuestions.length) * 100}%, #e2e8f0 ${(Math.min(currentQuestionIndex + 1, algebraQuestions.length) / algebraQuestions.length) * 100}% 100%)`,
+                        background: `conic-gradient(#3b82f6 0 ${(Math.min(currentQuestionIndex + 1, activeQuestions.length) / activeQuestions.length) * 100}%, #e2e8f0 ${(Math.min(currentQuestionIndex + 1, activeQuestions.length) / activeQuestions.length) * 100}% 100%)`,
                       }}
                     />
                     <div className="absolute inset-2 flex items-center justify-center rounded-full bg-white text-lg font-semibold text-slate-900">
                       {Math.round(
                         (Math.min(
                           currentQuestionIndex + 1,
-                          algebraQuestions.length,
+                          activeQuestions.length,
                         ) /
-                          algebraQuestions.length) *
+                          activeQuestions.length) *
                           100,
                       )}
                       %
@@ -705,7 +1178,7 @@ export default function StudentPractice() {
                       Current Question
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
-                      Algebra fundamentals practice
+                      {activeDrill.description}
                     </p>
                   </div>
                   <button
@@ -785,19 +1258,14 @@ export default function StudentPractice() {
                     Why this matters
                   </h3>
                   <div className="mt-2 text-3xl font-semibold tracking-tight text-rose-600">
-                    Algebra Basics
+                    {activeDrill.supportHeading}
                   </div>
                   <p className="mt-4 text-sm leading-6 text-slate-600">
-                    Mastering algebra fundamentals improves accuracy in many
-                    exam questions and raises predicted performance over time.
+                    {activeDrill.supportText}
                   </p>
                   <div className="mt-4 rounded-2xl border border-white/80 bg-white/70 p-4">
                     <p className="text-sm text-slate-600">
-                      Students who improve Algebra mastery often gain{" "}
-                      <span className="font-semibold text-slate-900">
-                        8–12%
-                      </span>{" "}
-                      overall score improvement.
+                      {activeDrill.supportStat}
                     </p>
                   </div>
                 </div>
@@ -817,7 +1285,9 @@ export default function StudentPractice() {
                       <div className="text-sm font-medium text-slate-500">
                         Current topic
                       </div>
-                      <div className="mt-1 font-semibold">Linear equations</div>
+                      <div className="mt-1 font-semibold">
+                        {currentQuestion?.topic || activeQuestions[0]?.topic || activeSet}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -840,26 +1310,7 @@ export default function StudentPractice() {
               </div>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-3">
-                {[
-                  {
-                    label: "Q2",
-                    title: "Simplifying expressions",
-                    meta: "Combine like terms",
-                    accent: "from-blue-500 to-cyan-400",
-                  },
-                  {
-                    label: "Q3",
-                    title: "Solving equations",
-                    meta: "One-step linear equations",
-                    accent: "from-violet-500 to-fuchsia-400",
-                  },
-                  {
-                    label: "Q4",
-                    title: "Rearranging terms",
-                    meta: "Build algebra confidence",
-                    accent: "from-emerald-500 to-teal-400",
-                  },
-                ].map((item) => (
+                {activeUpcomingQuestions.map((item) => (
                   <div
                     key={item.label}
                     className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-5"
@@ -883,13 +1334,13 @@ export default function StudentPractice() {
           </>
         )}
 
-        {isDrillComplete && (
+        {isDrillComplete && activeDrill && (
           <>
             <section className="grid gap-5 lg:grid-cols-3">
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <p className="text-sm font-medium text-slate-500">Drill Set</p>
                 <div className="mt-4 text-3xl font-semibold tracking-tight text-blue-600">
-                  Algebra Drill Set
+                  {activeDrill.displayTitle}
                 </div>
                 <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-600">
                   <span>✓</span>
@@ -902,7 +1353,7 @@ export default function StudentPractice() {
                   Final Score
                 </p>
                 <div className="mt-4 text-3xl font-semibold tracking-tight">
-                  {score} / {algebraQuestions.length}
+                  {score} / {activeQuestions.length}
                 </div>
                 <p className="mt-2 text-sm text-slate-500">
                   Questions answered correctly
@@ -912,7 +1363,7 @@ export default function StudentPractice() {
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <p className="text-sm font-medium text-slate-500">Accuracy</p>
                 <div className="mt-4 text-3xl font-semibold tracking-tight text-teal-600">
-                  {Math.round((score / algebraQuestions.length) * 100)}%
+                  {Math.round((score / activeQuestions.length) * 100)}%
                 </div>
                 <p className="mt-2 text-sm text-slate-500">
                   Great work reviewing your weakest topic
@@ -929,9 +1380,9 @@ export default function StudentPractice() {
                   Drill Set Complete
                 </h2>
                 <p className="mt-4 text-base leading-7 text-slate-600">
-                  You completed the Algebra Drill Set with {score} correct
+                  You completed the {activeDrill.displayTitle} with {score} correct
                   answer{score === 1 ? "" : "s"} out of{" "}
-                  {algebraQuestions.length}. Keep building momentum by retrying
+                  {activeQuestions.length}. Keep building momentum by retrying
                   the set or heading back to your practice dashboard.
                 </p>
 

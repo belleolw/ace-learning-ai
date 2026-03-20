@@ -82,6 +82,12 @@ export default function StudentStudyPlan() {
         ? `/student/progress?studentId=${studentId}`
         : "/student/progress",
     },
+    {
+      label: "Wellness",
+      to: studentId
+        ? `/student/wellness?studentId=${studentId}`
+        : "/student/wellness",
+    },
   ]
 
   useEffect(() => {

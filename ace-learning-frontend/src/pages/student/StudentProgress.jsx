@@ -56,6 +56,12 @@ export default function StudentProgress() {
         ? `/student/progress?studentId=${studentId}`
         : "/student/progress",
     },
+    {
+      label: "Wellness",
+      to: studentId
+        ? `/student/wellness?studentId=${studentId}`
+        : "/student/wellness",
+    },
   ];
 
   useEffect(() => {
