@@ -52,6 +52,10 @@ export default function ParentChildProgress() {
       label: "Recommendations",
       to: studentId ? `/parent/recommendations?studentId=${studentId}` : "/parent/recommendations",
     },
+    {
+      label: "Wellness",
+      to: studentId ? `/parent/wellness?studentId=${studentId}` : "/parent/wellness",
+    },
   ]
 
   useEffect(() => {

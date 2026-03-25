@@ -82,13 +82,6 @@ function buildMockWellnessData() {
         severity: "positive",
       },
     ],
-    parent_summary: {
-      avg_sleep: 6.2,
-      screen_flag: true,
-      recommendation: "Encourage a consistent bedtime before 10:30pm and limit device use after 9:30pm on school nights.",
-      study_sessions_completed: 4,
-      wellness_trend: "Declining slightly this week",
-    },
     optimal_study_window: "7:00pm – 8:30pm",
     suggested_bedtime: "10:30pm",
     devices_connected: ["iPhone (Screen Time)", "Apple Watch (Sleep)"],
@@ -464,70 +457,6 @@ export default function StudentWellness() {
                   </div>
                 </section>
 
-                {/* Parent summary */}
-                <section className="rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-6 shadow-sm">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-500 shadow-sm">
-                        Parent Summary · Sent weekly
-                      </div>
-                      <h2 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">
-                        What your parents can see
-                      </h2>
-                      <p className="mt-1 text-sm text-slate-600">
-                        High-level summaries only — no raw usage data is shared
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 rounded-2xl border border-white bg-white px-4 py-2 text-sm font-medium text-violet-600 shadow-sm">
-                      Last sent: Sunday
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    {[
-                      {
-                        label: "Avg sleep shared",
-                        value: `${wellnessData.parent_summary.avg_sleep}h / night`,
-                        accent: "from-blue-500 to-cyan-400",
-                      },
-                      {
-                        label: "Screen time flag",
-                        value: wellnessData.parent_summary.screen_flag ? "Late-night use noted" : "All clear",
-                        accent: "from-rose-500 to-orange-400",
-                      },
-                      {
-                        label: "Sessions completed",
-                        value: `${wellnessData.parent_summary.study_sessions_completed} this week`,
-                        accent: "from-emerald-500 to-teal-400",
-                      },
-                      {
-                        label: "Wellness trend",
-                        value: wellnessData.parent_summary.wellness_trend,
-                        accent: "from-amber-400 to-orange-400",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="relative overflow-hidden rounded-3xl border border-white/80 bg-white/70 p-5"
-                      >
-                        <div
-                          className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.accent}`}
-                        />
-                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                          {item.label}
-                        </div>
-                        <div className="mt-3 text-base font-semibold text-slate-900">{item.value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-5 rounded-2xl border border-white/80 bg-white/70 p-4">
-                    <p className="text-sm font-medium text-slate-700">Parent recommendation this week:</p>
-                    <p className="mt-1 text-sm text-slate-600">
-                      {wellnessData.parent_summary.recommendation}
-                    </p>
-                  </div>
-                </section>
               </>
             )}
 

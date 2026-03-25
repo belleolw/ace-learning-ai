@@ -28,20 +28,20 @@ export default function AlgebraDrillSet() {
   const upcomingQuestions = [
     {
       label: "Q2",
-      title: "Simplifying expressions",
-      meta: "Combine like terms",
+      title: "Special angle values",
+      meta: "Recall exact trigonometric ratios",
       accent: "from-blue-500 to-cyan-400",
     },
     {
       label: "Q3",
-      title: "Solving equations",
-      meta: "One-step linear equations",
+      title: "Applying tangent",
+      meta: "Use tangent in right-angled triangles",
       accent: "from-violet-500 to-fuchsia-400",
     },
     {
       label: "Q4",
-      title: "Rearranging terms",
-      meta: "Build algebra confidence",
+      title: "Trigonometric reasoning",
+      meta: "Build confidence with angle relationships",
       accent: "from-emerald-500 to-teal-400",
     },
   ]

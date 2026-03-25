@@ -44,6 +44,12 @@ export default function ParentDashboard() {
   const studentId = studentIdFromQuery || studentIdFromStorage || ""
 
   useEffect(() => {
+    if (studentIdFromQuery) {
+      localStorage.setItem(STORAGE_KEY, studentIdFromQuery)
+    }
+  }, [studentIdFromQuery])
+
+  useEffect(() => {
     let isMounted = true
 
     async function fetchParentDashboard() {
@@ -85,10 +91,11 @@ export default function ParentDashboard() {
   }, [studentId])
 
   const navItems = [
-    { label: "Dashboard", to: "/parent/overview" },
-    { label: "Child Progress", to: "/parent/child-progress" },
-    { label: "Weak Topics", to: "/parent/weak-topics" },
-    { label: "Recommendations", to: "/parent/recommendations" },
+    { label: "Dashboard", to: studentId ? `/parent/overview?studentId=${studentId}` : "/parent/overview" },
+    { label: "Child Progress", to: studentId ? `/parent/child-progress?studentId=${studentId}` : "/parent/child-progress" },
+    { label: "Weak Topics", to: studentId ? `/parent/weak-topics?studentId=${studentId}` : "/parent/weak-topics" },
+    { label: "Recommendations", to: studentId ? `/parent/recommendations?studentId=${studentId}` : "/parent/recommendations" },
+    { label: "Wellness", to: studentId ? `/parent/wellness?studentId=${studentId}` : "/parent/wellness" },
   ]
 
   const mastery = useMemo(() => {

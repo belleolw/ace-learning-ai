@@ -14,6 +14,7 @@ import ParentDashboard from "./pages/parent/ParentDashboard";
 import ParentChildProgressPage from "./pages/parent/ParentChildProgressPage";
 import ParentWeakTopicsPage from "./pages/parent/ParentWeakTopicsPage";
 import ParentRecommendationsPage from "./pages/parent/ParentRecommendationsPage";
+import ParentWellness from "./pages/parent/ParentWellness";
 
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import TeacherAtRiskPage from "./pages/teacher/TeacherAtRiskPage";
@@ -81,6 +82,11 @@ export const router = createBrowserRouter([
     // Parent recommendations route
     path: "/parent/recommendations",
     element: <ParentRecommendationsPage />,
+  },
+  {
+    // Parent wellness route
+    path: "/parent/wellness",
+    element: <ParentWellness />,
   },
   {
     // Teacher overview route

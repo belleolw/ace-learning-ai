@@ -79,6 +79,10 @@ export default function ParentRecommendationsPage() {
         ? `/parent/recommendations?studentId=${studentId}`
         : "/parent/recommendations",
     },
+    {
+      label: "Wellness",
+      to: studentId ? `/parent/wellness?studentId=${studentId}` : "/parent/wellness",
+    },
   ];
 
   useEffect(() => {

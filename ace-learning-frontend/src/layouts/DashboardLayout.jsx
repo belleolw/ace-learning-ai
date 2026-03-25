@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 
+/**
+ * @typedef {{ label: string, to: string }} DashboardNavItem
+ */
+
+/**
+ * @typedef {object} DashboardLayoutProps
+ * @property {string} profileName
+ * @property {string} profileSubtitle
+ * @property {DashboardNavItem[]=} navItems
+ * @property {import("react").ReactNode} children
+ */
+
+/** @param {DashboardLayoutProps} props */
 export default function DashboardLayout({
   profileName,
   profileSubtitle,
