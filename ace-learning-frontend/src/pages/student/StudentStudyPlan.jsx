@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
-
-const API_BASE_URL = "http://127.0.0.1:5001"
+import { API_BASE_URL } from "../../config/api"
 
 function parseMeta(meta = "") {
   const parts = String(meta).split("·").map((part) => part.trim())

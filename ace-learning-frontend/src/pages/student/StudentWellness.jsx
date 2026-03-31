@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import DashboardLayout from "../../layouts/DashboardLayout"
+import { API_BASE_URL } from "../../config/api"
 
-const API_BASE_URL = "http://127.0.0.1:5001"
 const STORAGE_KEY = "ace-student-id"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
