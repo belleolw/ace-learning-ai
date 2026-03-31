@@ -1,25 +1,14 @@
 # ============================================================
-# ACE LEARNING – LEARNING ANALYTICS MODEL
+# ACE LEARNING – LIGHTWEIGHT ANALYTICS LAYER
 # ------------------------------------------------------------
-# This script builds a simple learning analytics pipeline that:
-# 1. Loads student performance data
-# 2. Engineers additional learning behaviour features
-# 3. Trains two ML models:
-#       - Linear Regression → Predict exam score
-#       - Logistic Regression → Classify risk level
-# 4. Identifies weak topics
-# 5. Produces dashboard‑ready JSON output for the frontend
+# This module prepares dashboard-ready analytics from the bundled
+# CSV dataset without training models at runtime. It keeps cold
+# starts predictable for serverless deployment.
 # ============================================================
 
-import json
 import numpy as np
 import pandas as pd
 from pathlib import Path
-
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import mean_squared_error, accuracy_score, f1_score, classification_report
-from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
 # ------------------------------------------------------------
@@ -78,91 +67,55 @@ def engineer_features(df):
     return df
 
 
-# ------------------------------------------------------------
-# MODEL TRAINING
-# Two models are trained:
-#   1. Linear Regression  → Predicts final exam score
-#   2. Logistic Regression → Classifies student risk level
-# ------------------------------------------------------------
-def train_models(df):
+def load_model_bundle():
+    """Load lightweight analytics assets for a warm serverless instance."""
+    df = engineer_features(load_data())
 
-    # Feature set used for both regression and classification
-    features = [
-        "quiz_score",
-        "time_taken",
-        "attempt_count",
-        "past_test_score",
-        "time_efficiency",
-        "attempt_efficiency",
-        "avg_quiz_score_per_topic",
-        "topic_mastery",
-        "overall_performance_score",
-    ]
-
-    X = df[features]
-
-    y_reg = df["final_exam_score"]
-    y_cls = df["risk_level"]
-
-    X_train_r, X_test_r, y_train_r, y_test_r = train_test_split(
-        X, y_reg, test_size=0.2, random_state=42
+    topic_baselines = (
+        df.groupby("topic", as_index=False)
+        .agg(
+            topic_exam_baseline=("final_exam_score", "mean"),
+            topic_mastery_baseline=("topic_mastery", "mean"),
+        )
     )
 
-    # Convert textual risk labels ("At Risk", "Stable", "High Performer")
-    # into numeric classes required by scikit‑learn
-    label_encoder = LabelEncoder()
-    y_cls_encoded = label_encoder.fit_transform(y_cls)
+    return {
+        "df": df,
+        "topic_baselines": topic_baselines.set_index("topic").to_dict("index"),
+    }
 
-    X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(
-        X, y_cls_encoded, test_size=0.2, random_state=42, stratify=y_cls_encoded
-    )
 
-    reg_model = LinearRegression()
-    reg_model.fit(X_train_r, y_train_r)
+def predict_exam_score(student_df, model_bundle):
+    latest_student_df = get_latest_topic_snapshot(student_df)
 
-    y_pred_r = reg_model.predict(X_test_r)
-    rmse = np.sqrt(mean_squared_error(y_test_r, y_pred_r))
+    if latest_student_df.empty:
+        return 0.0
 
-    # Standardize feature values for Logistic Regression
-    scaler = StandardScaler()
+    topic_baselines = model_bundle.get("topic_baselines", {})
+    predicted_scores = []
 
-    X_train_c_scaled = scaler.fit_transform(X_train_c)
-    X_test_c_scaled = scaler.transform(X_test_c)
+    for _, row in latest_student_df.iterrows():
+        topic_stats = topic_baselines.get(row["topic"], {})
+        topic_exam_baseline = float(
+            topic_stats.get("topic_exam_baseline", row.get("final_exam_score", row["topic_mastery"]))
+        )
 
-    clf_model = LogisticRegression(max_iter=1000, class_weight="balanced")
-    clf_model.fit(X_train_c_scaled, y_train_c)
+        predicted_score = (
+            0.55 * float(row["topic_mastery"])
+            + 0.25 * float(row["past_test_score"])
+            + 0.20 * topic_exam_baseline
+        )
+        predicted_scores.append(predicted_score)
 
-    y_pred_c = clf_model.predict(X_test_c_scaled)
+    return float(np.clip(np.mean(predicted_scores), 0, 100))
 
-    accuracy = accuracy_score(y_test_c, y_pred_c)
-    f1 = f1_score(y_test_c, y_pred_c, average="weighted")
 
-    print("\n=== Regression Model Evaluation ===")
-    print("RMSE:", rmse)
-
-    print("\n=== Classification Model Evaluation ===")
-    print("Accuracy:", accuracy)
-    print("F1 Score:", f1)
-
-    print("\nClassification Precision / Recall Table")
-    print("---------------------------------------")
-    print(classification_report(y_test_c, y_pred_c, target_names=label_encoder.classes_))
-
-    # --------------------------------------------------
-    # MODEL INTERPRETABILITY
-    # Print feature importance from Linear Regression
-    # --------------------------------------------------
-    print("\nFeature Importance (Regression Coefficients)")
-    print("---------------------------------------------")
-
-    coef_df = pd.DataFrame({
-        "feature": features,
-        "coefficient": reg_model.coef_
-    }).sort_values(by="coefficient", ascending=False)
-
-    print(coef_df)
-
-    return reg_model, clf_model, scaler, label_encoder, features
+def classify_risk_level(predicted_exam_score, weak_topic_count):
+    if predicted_exam_score < 60 or weak_topic_count >= 3:
+        return "At Risk"
+    if predicted_exam_score < 80 or weak_topic_count >= 1:
+        return "Stable"
+    return "High Performer"
 
 
 # ------------------------------------------------------------
@@ -300,24 +253,18 @@ def calculate_topic_analytics(df):
 #   - weak topics per student
 # This is rule-based prioritisation, not a separate ML model.
 # ------------------------------------------------------------
-def generate_teacher_focus_list(df, reg_model, clf_model, scaler, label_encoder, features):
+def generate_teacher_focus_list(df, model_bundle):
 
     focus_list = []
 
     for student_id in df["student_id"].unique():
         student_df = df[df["student_id"] == student_id].copy()
 
-        student_df["predicted_exam_score"] = reg_model.predict(student_df[features])
-        predicted_exam_score = student_df["predicted_exam_score"].mean()
-
-        avg_features = pd.DataFrame([student_df[features].mean()])
-        avg_features_scaled = scaler.transform(avg_features)
-        risk_encoded = clf_model.predict(avg_features_scaled)[0]
-        risk_level = label_encoder.inverse_transform([risk_encoded])[0]
-
         _, weak_topics_df = detect_weak_topics(student_df)
         weak_topics = weak_topics_df["topic"].tolist()
         weak_topic_count = len(weak_topics)
+        predicted_exam_score = predict_exam_score(student_df, model_bundle)
+        risk_level = classify_risk_level(predicted_exam_score, weak_topic_count)
 
         focus_score = 0
 
@@ -505,4 +452,3 @@ def build_study_plan(topic_summary_df):
         )
 
     return plan
-
