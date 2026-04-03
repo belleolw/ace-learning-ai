@@ -1,6 +1,6 @@
-# Ace Tuition AI Dashboard
+# Ace Learning AI Dashboard
 
-Ace Tuition AI is a prototype **AI-powered adaptive learning dashboard** designed for tuition centres. The system demonstrates how **learning analytics and machine learning** can help students, parents, and teachers monitor academic performance, detect weak topics early, and plan targeted interventions.
+Ace Learning AI is a prototype **AI-powered adaptive learning dashboard** designed for tuition centres. The system demonstrates how **learning analytics and machine learning** can help students, parents, and teachers monitor academic performance, detect weak topics early, and plan targeted interventions.
 
 This project was built as part of the **IS215 Digital Business & Technology Transformation** module.
 
