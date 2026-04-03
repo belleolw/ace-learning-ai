@@ -75,7 +75,7 @@ Teachers can:
 # Project Structure
 
 ```text
-ace-learning-AI
+ace-tuition-AI
 │
 ├─ ace-learning-frontend
 │   ├─ src
@@ -119,8 +119,8 @@ ace-learning-AI
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/belleolw/ace-tuition-ai.git
-cd ace-tuition-ai
+git clone https://github.com/belleolw/ace-tuition-AI.git
+cd ace-tuition-AI
 ```
 
 ---
@@ -129,6 +129,8 @@ cd ace-tuition-ai
 
 This project consists of a **React frontend** and a **Flask backend**.
 You must run both services concurrently.
+
+⚠️ Note: On Mac, you must use python3 instead of python and use a virtual environment due to system restrictions.
 
 ---
 
@@ -142,14 +144,33 @@ cd ace-learning-backend
 
 ### Install dependencies
 
+#### Mac / Linux
 ```bash
-pip install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
+
+#### Windows
+```bash
+python -m venv venv
+venv\\Scripts\\activate
+python -m pip install -r requirements.txt
 ```
 
 ### Run backend API
 
 ```bash
 cd learning-analytics/learning_analytics_model
+```
+
+#### Mac / Linux
+```bash
+python3 app.py
+```
+
+#### Windows
+```bash
 python app.py
 ```
 
@@ -194,7 +215,8 @@ If using the alternative API structure:
 
 ```bash
 cd ace-learning-backend/api
-python index.py
+python3 index.py   # Mac/Linux
+# python index.py  # Windows
 ```
 
 ---
