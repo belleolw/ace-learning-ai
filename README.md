@@ -80,35 +80,33 @@ ace-tuition-AI
 ├─ ace-learning-frontend
 │   ├─ src
 │   │   ├─ assets
-│   │   ├─ components
 │   │   ├─ layouts
 │   │   ├─ pages
 │   │   │   ├─ student
 │   │   │   ├─ parent
 │   │   │   └─ teacher
+│   │   ├─ config
+│   │   │   └─ api.js
 │   │   ├─ utils
+│   │   │   └─ auth.js
 │   │   ├─ App.jsx
 │   │   ├─ main.jsx
 │   │   └─ router.jsx
 │   │
 │   ├─ public
-│   ├─ index.html
 │   ├─ package.json
-│   ├─ vite.config.js
-│   └─ eslint.config.js
+│   └─ dist
 │
 ├─ ace-learning-backend
+│   ├─ requirements.txt
+│   ├─ api
+│   │   └─ index.py
 │   └─ learning-analytics
 │       ├─ data
 │       │   └─ student_learning_data.csv
-│       │
-│       ├─ learning_analytics_model
-│       │   ├─ learning_analytics_model.py
-│       │   └─ app.py
-│       │
-│       ├─ notebooks
-│       ├─ venv
-│       └─ requirements.txt
+│       └─ learning_analytics_model
+│           ├─ app.py
+│           ├─ learning_analytics_model.py
 │
 ├─ .gitignore
 └─ README.md
@@ -127,7 +125,45 @@ cd ace-tuition-ai
 
 ---
 
-# Frontend Setup
+# Running the Full System
+
+This project consists of a **React frontend** and a **Flask backend**.
+You must run both services concurrently.
+
+---
+
+## 2. Backend Setup (Flask API)
+
+Navigate to backend:
+
+```bash
+cd ace-learning-backend
+```
+
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run backend API
+
+```bash
+cd learning-analytics/learning_analytics_model
+python app.py
+```
+
+Backend will run at:
+
+```text
+http://127.0.0.1:5001
+```
+
+---
+
+## 3. Frontend Setup (React Dashboard)
+
+Open a new terminal and run:
 
 ```bash
 cd ace-learning-frontend
@@ -135,7 +171,7 @@ npm install
 npm run dev
 ```
 
-Open:
+Frontend will run at:
 
 ```text
 http://localhost:5173
@@ -143,38 +179,36 @@ http://localhost:5173
 
 ---
 
-# Backend Setup
+## 4. Login Instructions
+
+Once the frontend is running:
+
+- Open: http://localhost:5173
+- Enter any test Student ID (e.g. S044, S005, S091)
+
+---
+
+## 5. Optional: API Entry Point
+
+If using the alternative API structure:
 
 ```bash
-cd ace-learning-backend/learning-analytics
+cd ace-learning-backend/api
+python index.py
 ```
 
-### 1. Create virtual environment
+---
 
-```bash
-python3 -m venv venv
+## Notes
+
+- Ensure backend is running before frontend
+- If API errors occur, verify API base URL in:
+
+```text
+ace-learning-frontend/src/config/api.js
 ```
 
-### 2. Activate environment
-
-```bash
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-### 4. Run API
-
-```bash
-cd learning_analytics_model
-python app.py
-```
-
-API runs on:
+- Default backend URL:
 
 ```text
 http://127.0.0.1:5001
